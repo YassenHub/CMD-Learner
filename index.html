@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0f1020">
+  <meta name="color-scheme" content="dark light">
+  <title>CMD Guide | Windows Commands by Yassen</title>
+  <meta name="description" content="Windows CMD guide: users, permissions, DISM, SFC, diskpart, bcdedit, bcdboot, network and registry commands, with copy buttons.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230f1020'/%3E%3Ctext x='32' y='44' font-family='monospace' font-size='34' font-weight='900' text-anchor='middle' fill='%23ff5d73'%3E%3E_%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&display=swap" rel="stylesheet">
+  <style>
+    :root { --bg:#0f1020; --panel:#181a33; --line:#2b2e55; --accent:#ff5d73; --text:#eceeff; --muted:#9da1cc; --code:#8bffc4; --warn:#ffb454;
+      --display:"Bricolage Grotesque","Trebuchet MS",system-ui,sans-serif; --mono:ui-monospace,Consolas,"Cascadia Mono",monospace; }
+    @media (prefers-color-scheme: light) { :root { --bg:#f2f4fb; --panel:#e4e8f6; --line:#c9cfe8; --accent:#d9304c; --text:#14162e; --muted:#555a84; --code:#0b6b45; --warn:#a85a00; } }
+    * { box-sizing: border-box; }
+    [hidden] { display: none !important; }
+    html { scroll-behavior: smooth; scroll-padding-top: 24px; }
+    body { margin:0; background:var(--bg); color:var(--text); font:15px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; }
+    :focus-visible { outline:2px solid var(--accent); outline-offset:3px; border-radius:6px; }
+    .skip { position:absolute; left:12px; top:-60px; z-index:20; padding:8px 14px; background:var(--accent); color:#fff; border-radius:8px; font-weight:700; text-decoration:none; }
+    .skip:focus { top:10px; }
+    .wrap { width:min(1180px,calc(100% - 40px)); margin:0 auto; }
+    .hero { padding:50px 0 30px; border-bottom:1px solid var(--line); }
+    .meta { color:var(--muted); font-size:13px; }
+    .toplinks { display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; }
+    .toplinks a { color:var(--text); text-decoration:none; margin-inline-start:16px; font-weight:600; }
+    .toplinks a:hover { color:var(--accent); }
+    h1 { margin:22px 0 0; font:800 clamp(52px,12vw,130px)/.9 var(--display); letter-spacing:-.045em; }
+    h1 i { font-style:normal; color:var(--accent); }
+    .tagline { margin:16px 0 0; max-width:560px; color:var(--muted); font-size:17px; }
+    #search { display:block; width:min(640px,100%); margin-top:26px; padding:14px 4px; border:0; border-bottom:2px solid var(--line); background:transparent; color:var(--text); font:600 21px var(--display); }
+    #search::placeholder { color:var(--muted); }
+    #search:focus { outline:none; border-color:var(--accent); }
+    .notice { margin-top:22px; padding:12px 16px; border-inline-start:4px solid var(--warn); background:var(--panel); border-radius:8px; max-width:720px; }
+    .shell { display:grid; grid-template-columns:210px 1fr; gap:44px; padding:34px 0 60px; }
+    .side { position:sticky; top:24px; align-self:start; display:flex; flex-direction:column; gap:2px; }
+    .side a { display:flex; justify-content:space-between; padding:7px 12px; border-radius:9px; color:var(--muted); text-decoration:none; font-weight:600; }
+    .side a:hover { background:var(--panel); color:var(--text); }
+    .side small { opacity:.75; font-weight:500; }
+    .section { margin-bottom:44px; }
+    .section h2 { margin:0 0 4px; font:800 28px/1.15 var(--display); letter-spacing:-.03em; }
+    .section p { margin:0 0 10px; color:var(--muted); }
+    .cmd { display:grid; grid-template-columns:minmax(0,1.15fr) minmax(0,1fr) auto; gap:6px 18px; align-items:center; padding:12px 8px; border-bottom:1px solid var(--line); border-radius:8px; }
+    .cmd:hover { background:var(--panel); }
+    code { direction:ltr; text-align:left; font:600 13.5px var(--mono); color:var(--code); overflow-wrap:anywhere; }
+    code::before { content:"> "; color:var(--muted); }
+    .desc { color:var(--muted); }
+    .warn { color:var(--warn); }
+    .warn::before { content:"⚠ "; }
+    button { font:inherit; font-size:12px; font-weight:700; padding:5px 12px; border:1px solid var(--line); border-radius:99px; background:transparent; color:var(--text); cursor:pointer; }
+    button:hover { border-color:var(--accent); color:var(--accent); }
+    .empty { padding:34px; text-align:center; color:var(--muted); border:2px dashed var(--line); border-radius:14px; }
+    footer { border-top:1px solid var(--line); padding:24px 0 34px; color:var(--muted); font-size:13px; }
+    #toast { position:fixed; bottom:20px; left:50%; transform:translateX(-50%); padding:8px 18px; border-radius:99px; background:var(--accent); color:#fff; font-weight:700; opacity:0; pointer-events:none; transition:opacity .2s; }
+    #toast.on { opacity:1; }
+    @media (max-width:860px) {
+      .shell { grid-template-columns:1fr; gap:20px; }
+      .side { position:static; flex-direction:row; overflow-x:auto; gap:6px; padding-bottom:6px; }
+      .side a { flex:none; gap:8px; border:1px solid var(--line); border-radius:99px; padding:6px 13px; font-size:13px; }
+      .cmd { grid-template-columns:1fr auto; }
+      .desc { grid-column:1 / -1; order:3; }
+    }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior:auto; } * { transition:none !important; } }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#guide">Skip to commands</a>
+  <header class="hero wrap">
+    <div class="meta toplinks">By Yassen · Version 2.0
+      <span><a href="https://yassen2012ya.github.io/LinkHub/" rel="noopener noreferrer">← LinkHub</a>
+      <a href="https://github.com/yassen2012ya" target="_blank" rel="noopener noreferrer">GitHub</a></span>
+    </div>
+    <h1>CMD <i>Guide</i></h1>
+    <p class="tagline">أوامر ويندوز من الأساسيات إلى DISM وdiskpart وbcdedit، مع زر نسخ لكل أمر.</p>
+    <input id="search" type="search" placeholder="Search: diskpart, bcdboot, user..." aria-label="Search commands" autocomplete="off" spellcheck="false">
+    <div class="notice" dir="rtl">افتح CMD بصلاحية <b>Administrator</b> لمعظم الأوامر. جرّب الأوامر الخطرة (⚠) على جهاز افتراضي أو جهاز غير مهم أولًا، واقرأ الأمر قبل الضغط على Enter.</div>
+  </header>
+  <div class="wrap shell">
+    <nav class="side" id="side" aria-label="Categories"></nav>
+    <main id="guide" tabindex="-1">
+      <div class="empty" id="empty" role="status" hidden>No commands found.</div>
+    </main>
+  </div>
+  <footer><div class="wrap toplinks"><span>Designed &amp; maintained by Yassen Islam · للتعلم فقط، استخدمها على أجهزتك أنت.</span>
+    <span><a href="https://yassen2012ya.github.io/LinkHub/" rel="noopener noreferrer">LinkHub</a>
+    <a href="https://github.com/yassen2012ya" target="_blank" rel="noopener noreferrer">GitHub</a></span></div></footer>
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    // Format: 'command ~ وصف'. Start with ! for a warning.
+    const DATA = [
+      { id:'users', t:'Users & Groups', n:'المستخدمون والمجموعات', c:[
+        'net user ~ عرض كل المستخدمين',
+        'net user "name" ~ تفاصيل مستخدم معين',
+        'net user "name" * ~ إنشاء/تغيير كلمة المرور وهي تُكتب مخفية (أأمن من كتابتها في الأمر)',
+        'net user "name" "<StrongPassword>" /add ~ إنشاء مستخدم جديد',
+        '!net user "name" /delete ~ حذف المستخدم',
+        'net user "name" /active:no ~ تعطيل الحساب',
+        '!net user Guest /active:yes ~ تفعيل حساب Guest، غير آمن في الأجهزة الحقيقية',
+        'net user "name" /passwordchg:no ~ منع المستخدم من تغيير كلمته',
+        'net localgroup ~ عرض كل المجموعات',
+        'net localgroup administrators "name" /add ~ إعطاء صلاحية مدير',
+        'net localgroup administrators "name" /del ~ سحب صلاحية المدير',
+        'net localgroup users "name" /add ~ إضافته كمستخدم عادي',
+        'whoami ~ اسم المستخدم الحالي',
+        'whoami /groups ~ المجموعات التي ينتمي لها المستخدم الحالي' ] },
+      { id:'files', t:'Files & Permissions', n:'الملفات والصلاحيات', c:[
+        'dir ~ عرض محتويات المجلد الحالي',
+        'cd /d D:\\folder ~ الانتقال لمجلد (حتى لو على قرص آخر)',
+        'mkdir C:\\lab ~ إنشاء مجلد',
+        'copy file.txt D:\\ ~ نسخ ملف',
+        'robocopy C:\\src D:\\dst /E ~ نسخ مجلد كامل بكل محتوياته',
+        '!del /q file.txt ~ حذف ملف نهائيًا بدون سلة المحذوفات',
+        'attrib +h +s file.txt ~ إخفاء ملف',
+        'icacls C:\\lab ~ عرض الصلاحيات',
+        'icacls C:\\lab /grant user1:(F) ~ إعطاء تحكم كامل',
+        '!icacls C:\\lab /deny user2:(F) ~ منع المستخدم من المجلد (المدير يقدر يأخذ الملكية ويعدّل)',
+        '!icacls C:\\lab /inheritance:r ~ إزالة الوراثة، قد يقفل المجلد على الجميع',
+        'takeown /f C:\\lab /r ~ أخذ ملكية المجلد وما بداخله' ] },
+      { id:'repair', t:'System Repair', n:'إصلاح النظام', c:[
+        'DISM /Online /Cleanup-Image /CheckHealth ~ فحص سريع لتلف الصورة',
+        'DISM /Online /Cleanup-Image /ScanHealth ~ فحص أعمق',
+        'DISM /Online /Cleanup-Image /RestoreHealth ~ إصلاح ملفات النظام من Windows Update (شغّله أولًا)',
+        'sfc /scannow ~ فحص وإصلاح ملفات النظام (شغّله بعد DISM)',
+        'chkdsk C: /f /r ~ فحص القرص وإصلاح أخطائه، يحتاج إعادة تشغيل',
+        'DISM /Get-WimInfo /WimFile:D:\\sources\\install.wim ~ عرض إصدارات ويندوز داخل ملف install.wim' ] },
+      { id:'diskpart', t:'Diskpart', n:'إدارة الأقراص (داخل diskpart)', c:[
+        'diskpart ~ فتح أداة الأقراص، وكل الأوامر التالية تُكتب داخلها',
+        'list disk ~ عرض الأقراص',
+        '!select disk 1 ~ اختيار القرص، تأكد من رقمه جيدًا من list disk',
+        'list volume ~ عرض الأقسام ورموزها',
+        'detail disk ~ تفاصيل القرص المختار',
+        '!clean ~ مسح كل أقسام القرص المختار ويفقد كل ما عليه',
+        'convert gpt ~ تحويل القرص إلى GPT (للـ UEFI)',
+        'convert mbr ~ تحويل القرص إلى MBR (للنظام القديم)',
+        'create partition primary ~ إنشاء قسم رئيسي',
+        '!format fs=ntfs quick label=Data ~ فورمات القسم المختار',
+        'assign letter=E ~ إعطاء القسم حرفًا',
+        'active ~ جعل القسم نشطًا (MBR)',
+        'exit ~ الخروج من diskpart' ] },
+      { id:'boot', t:'Boot: bcdedit & bcdboot', n:'الإقلاع', c:[
+        'bcdedit /enum ~ عرض إعدادات الإقلاع',
+        'bcdedit /export C:\\bcd_backup ~ نسخة احتياطية قبل أي تعديل (افعلها دائمًا)',
+        'bcdedit /import C:\\bcd_backup ~ استرجاع النسخة الاحتياطية',
+        'bcdedit /timeout 10 ~ مدة ظهور قائمة الإقلاع بالثواني',
+        'bcdedit /set {current} description "My Windows" ~ تغيير اسم النظام في القائمة',
+        'bcdedit /default {identifier} ~ اختيار النظام الافتراضي',
+        'bcdedit /set {default} bootmenupolicy legacy ~ قائمة إقلاع بشكل قديم (F8)',
+        '!bcdedit /set {current} safeboot minimal ~ الإقلاع بالوضع الآمن دائمًا',
+        'bcdedit /deletevalue {current} safeboot ~ الرجوع للإقلاع العادي بعد الأمر السابق',
+        'bcdboot C:\\Windows ~ إنشاء/إصلاح ملفات الإقلاع من نسخة ويندوز',
+        'bcdboot C:\\Windows /s S: /f UEFI ~ كتابة ملفات الإقلاع على قسم EFI (حرفه S)',
+        'bcdboot C:\\Windows /s S: /f BIOS ~ نفس الأمر لنظام BIOS/MBR',
+        'bootrec /fixmbr ~ إصلاح MBR (من بيئة الاسترداد WinRE)',
+        'bootrec /fixboot ~ كتابة قطاع إقلاع جديد',
+        'bootrec /rebuildbcd ~ البحث عن أنظمة وإعادة بناء BCD' ] },
+      { id:'network', t:'Network', n:'الشبكة', c:[
+        'ipconfig /all ~ كل تفاصيل الشبكة',
+        'ipconfig /flushdns ~ مسح ذاكرة DNS',
+        'ipconfig /release ~ تحرير عنوان IP الحالي',
+        'ipconfig /renew ~ طلب عنوان IP جديد',
+        'ping 8.8.8.8 ~ اختبار الاتصال بالإنترنت',
+        'tracert google.com ~ تتبع مسار الاتصال',
+        'nslookup google.com ~ معرفة عنوان IP لموقع',
+        'netstat -ano ~ عرض الاتصالات مع رقم العملية PID',
+        'netsh wlan show profiles ~ شبكات الواي فاي المحفوظة',
+        'netsh winsock reset ~ إصلاح مشاكل الاتصال، يحتاج إعادة تشغيل',
+        '!netsh int ip reset ~ إعادة ضبط إعدادات TCP/IP' ] },
+      { id:'process', t:'Processes & Services', n:'العمليات والخدمات', c:[
+        'tasklist ~ عرض العمليات',
+        'tasklist /FI "PID eq 1234" ~ معرفة اسم البرنامج من رقم PID',
+        '!taskkill /IM notepad.exe /F ~ إغلاق برنامج بالقوة',
+        'sc query ~ عرض الخدمات',
+        'net start ~ عرض الخدمات التي تعمل',
+        'net stop spooler ~ إيقاف خدمة',
+        'systeminfo ~ معلومات الجهاز والنظام',
+        'driverquery ~ عرض التعريفات المثبتة' ] },
+      { id:'registry', t:'Registry', n:'الريجستري', c:[
+        'reg query "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion" ~ قراءة مفتاح',
+        'reg export HKLM\\SOFTWARE C:\\backup.reg ~ نسخة احتياطية قبل التعديل',
+        'reg add "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System" /v dontdisplaylastusername /t REG_DWORD /d 1 /f ~ إخفاء اسم آخر مستخدم في شاشة الدخول (0 للإظهار)',
+        '!reg add "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Lsa" /v LimitBlankPasswordUse /t REG_DWORD /d 0 /f ~ يسمح بالدخول بدون كلمة مرور عبر الشبكة، غير آمن (القيمة 1 هي الافتراضية)' ] },
+      { id:'system', t:'System Control', n:'التحكم بالنظام', c:[
+        'gpupdate /force ~ تطبيق السياسات فورًا',
+        'gpresult /r ~ عرض السياسات المطبقة',
+        'powercfg /batteryreport ~ تقرير صحة البطارية',
+        'shutdown /s /t 0 ~ إغلاق فوري',
+        '!shutdown /r /t 0 ~ إعادة تشغيل فورية بدون سؤال',
+        'shutdown /a ~ إلغاء إغلاق أو إعادة تشغيل مجدولة',
+        'winver ~ إصدار ويندوز',
+        'hostname ~ اسم الجهاز',
+        'cls ~ مسح الشاشة',
+        'command /? ~ شرح أي أمر، مثلًا: diskpart /?' ] },
+    ];
+
+    const $ = id => document.getElementById(id);
+    const el = (t, c, x) => { const n = document.createElement(t); if (c) n.className = c; if (x) n.textContent = x; return n; };
+    const side = $('side'), main = $('guide'), empty = $('empty'), toast = $('toast');
+    let timer;
+    function copy(text) {
+      const done = () => { toast.textContent = 'Copied'; toast.classList.add('on'); clearTimeout(timer); timer = setTimeout(() => toast.classList.remove('on'), 1200); };
+      if (navigator.clipboard) navigator.clipboard.writeText(text).then(done, () => {});
+      else { const a = el('textarea'); a.value = text; document.body.appendChild(a); a.select(); document.execCommand('copy'); a.remove(); done(); }
+    }
+
+    const groups = DATA.map(g => {
+      const a = el('a'); a.href = '#' + g.id; const cnt = el('small');
+      a.append(el('span', '', g.t), cnt); side.appendChild(a);
+      const sec = el('section', 'section'); sec.id = g.id; sec.setAttribute('aria-labelledby', g.id + '-h');
+      const h = el('h2', '', g.t); h.id = g.id + '-h';
+      const sub = el('p', '', g.n); sub.dir = 'rtl';
+      sec.append(h, sub);
+      const rows = g.c.map(s => {
+        const warn = s[0] === '!'; if (warn) s = s.slice(1);
+        const i = s.lastIndexOf(' ~ '), cmd = s.slice(0, i), d = s.slice(i + 3);
+        const row = el('div', 'cmd'), code = el('code', '', cmd), desc = el('span', 'desc' + (warn ? ' warn' : ''), d);
+        desc.dir = 'rtl';
+        const b = el('button', '', 'Copy'); b.type = 'button'; b.setAttribute('aria-label', 'Copy: ' + cmd);
+        b.onclick = () => copy(cmd);
+        row.append(code, desc, b); row._t = (cmd + ' ' + d + ' ' + g.t).toLowerCase();
+        sec.appendChild(row); return row;
+      });
+      main.insertBefore(sec, empty);
+      return { sec, rows, cnt, a };
+    });
+
+    function render(q) {
+      let total = 0;
+      groups.forEach(g => {
+        let n = 0;
+        g.rows.forEach(r => { const ok = !q || r._t.includes(q); r.hidden = !ok; if (ok) n++; });
+        g.sec.hidden = g.a.hidden = !n; g.cnt.textContent = n; total += n;
+      });
+      empty.hidden = total > 0;
+    }
+    render('');
+    $('search').addEventListener('input', e => render(e.target.value.trim().toLowerCase()));
+  </script>
+</body>
+</html>
